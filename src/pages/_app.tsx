@@ -11,7 +11,7 @@ globalStyles();
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <Container>
-      <Header>
+      <Header href="/">
         <Image src={logoImg} alt="Imagem svg do cabeçalho da aplicação" />
       </Header>
       <Component {...pageProps} />
