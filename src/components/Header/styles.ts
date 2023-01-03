@@ -8,6 +8,9 @@ export const HeaderContainer = styled('header', {
 
   display: "flex",
   alignItens: "center",
-  justifyContent: "space-between",
+  justifyContent: "center",
   
+  button: {
+    marginLeft: "auto",
+  },
 });
