@@ -1,10 +1,56 @@
 import * as Dialog from "@radix-ui/react-dialog";
+import axios from "axios";
 import Image from "next/image";
 import { X } from "phosphor-react";
+import { useContext, useState } from "react";
+import { CartContext } from "../../contexts/CartContext";
 import CartButton from "../CartButton";
 import { CartClose, CartContent, CartProduct, ProductImage, CartFinalization, CartProductDetails, FinalizationDetails } from "./styles";
+interface Product {
+  id: string;
+  name: string;
+  imageUrl: string;
+  price: string;
+  numberPrice: number;
+  description: string;
+  defaultPriceId: string;
+}
 
-export default function Cart() {
+interface CartProps {
+  product: Product;
+}
+
+export default function Cart({ product }: CartProps) {
+  const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false);
+
+  const { cartItems, removeProductFromCart, totalPrice } = useContext(CartContext);
+  const cartItemsLength = cartItems.length;
+
+  const formattedPrice = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(totalPrice);
+
+  async function handleBuyProduct() {
+    try {
+      setIsCreatingCheckoutSession(true);
+
+      const response = await axios.post('/api/checkout', {
+        products: cartItems, //enviando o id do preço do produto 
+      });
+
+      const { checkoutUrl } = response.data; //capturando o link de redirecionamento de compra
+
+      window.location.href = checkoutUrl;
+    } catch {
+      // conectar com uma ferramenta de observabilidades (Datadog / Sentry)
+
+      setIsCreatingCheckoutSession(false);
+
+      alert('Falha ao redirecionar ao checkout!');
+    }
+  }
+
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
@@ -20,35 +66,37 @@ export default function Cart() {
           <h2>Sacola de compras</h2>
 
           <section>
-            {/* <p>Parece que seu carrinho está vazio!</p> */}
+            {cartItemsLength <= 0 && <p>Seu carrinho está vázio, que pena!</p>}
 
-            <CartProduct>
-              <ProductImage>
-                <Image width={100} height={93} alt="" src="https://s3-alpha-sig.figma.com/img/387d/13ce/de131bd1ccf9bbe6b2331e88d3df20cd?Expires=1673827200&Signature=TfdtdBNk~UUdHTUOH4G3vhM0cQ6kh9Mr2d2AlDt5H-52VpORpvabA7SvoBufxKvFr2YhuPc6CuEhkHCjgYAaJgYrXVVdwS-FGI3Cja0Yy3qdHby9sVibDvOjB2C8t8Kcg98edkYUDccwGB9Kt20ZEYKI2bJHezPVcWHL8R0toqmTIULFzYTshAn3YC-WcnUd~VytV8rwlRbyDIgbYNibh3hUmyBP5fhfnQjdyY1Iurdk21CR8S1O7kDq5Pfnpz3eabVw5zt31V8Eb8k-iOx9brOCueBLLD8pMJDmJ90RKTt~wwawOjzfLN1Ycu90rEqIPxUExThhj5B3rQYVSWP3TQ__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4" />
-              </ProductImage>
+            {cartItems.map(product => (
+              <CartProduct key={product.id}>
+                <ProductImage>
+                  <Image width={100} height={93} alt="" src={product.imageUrl} />
+                </ProductImage>
 
-              <CartProductDetails>
-                <p>Produto 1</p>
-                <strong>R$ 25,90</strong>
-                <button>Remover</button>
-              </CartProductDetails>
-            </CartProduct>
+                <CartProductDetails>
+                  <p>{product.name}</p>
+                  <strong>{product.price}</strong>
+                  <button onClick={() => removeProductFromCart(product.id)}>Remover</button>
+                </CartProductDetails>
+              </CartProduct>
+            ))}
           </section>
 
           <CartFinalization>
             <FinalizationDetails>
               <div>
                 <span>Quantidade</span>
-                <p>2 itens</p>
+                <p>{cartItemsLength} {cartItemsLength === 1 ? "item" : "itens"}</p>
               </div>
 
               <div>
                 <span>Valor total</span>
-                <p>R$ 100.00</p>
+                <p>{formattedPrice}</p>
               </div>
             </FinalizationDetails>
 
-            <button>Finalizar compra</button>
+            <button onClick={handleBuyProduct} disabled={isCreatingCheckoutSession || cartItemsLength <= 0}>Finalizar compra</button>
           </CartFinalization>
         </CartContent>
       </Dialog.Portal>

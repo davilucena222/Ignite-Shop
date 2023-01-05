@@ -9,7 +9,7 @@ import Stripe from "stripe";
 import useEmblaCarousel from "embla-carousel-react";
 import { stripe } from "../lib/stripe";
 import CartButton from "../components/CartButton";
-import { useContext } from "react";
+import { MouseEvent, useContext } from "react";
 import { CartContext } from "../contexts/CartContext";
 
 interface ProductInfo {
@@ -17,7 +17,7 @@ interface ProductInfo {
   name: string;
   imageUrl: string;
   price: string;
-  numberPrice: string;
+  numberPrice: number;
   description: string;
   defaultPrice: string;
 }
@@ -27,13 +27,18 @@ interface HomeProps {
 }
 
 export default function Home({ products }: HomeProps) {
-  const { addingProductToCart } = useContext(CartContext);
+  const { addingProductToCart, checkIfProductAlreadyExistsInTheCart } = useContext(CartContext);
 
   const [emblaRef] = useEmblaCarousel({
     align: "start",
     skipSnaps: false,
     dragFree: true,
   });
+
+  function handleEventClick(event: MouseEvent<HTMLButtonElement>, product: ProductInfo) {
+    event.preventDefault();
+    addingProductToCart(product);
+  }
 
   return (
     <>
@@ -57,7 +62,7 @@ export default function Home({ products }: HomeProps) {
                         <span>{product.price}</span>
                        </div>
 
-                       <CartButton color="green" size="large" onClick={() => addingProductToCart(product)} />
+                       <CartButton color="green" size="large" onClick={(event) => handleEventClick(event, product)} disabled={checkIfProductAlreadyExistsInTheCart(product.id)} />
                       </footer>
                     </Product>
                   </Link>
@@ -87,6 +92,8 @@ export const getStaticProps: GetStaticProps = async () => {
         style: 'currency', 
         currency: 'BRL',
       }).format(price.unit_amount / 100),
+      numberPrice: price.unit_amount / 100,
+      defaultPriceId: price.id,
     }
   });
 

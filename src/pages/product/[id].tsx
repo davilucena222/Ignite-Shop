@@ -1,44 +1,36 @@
-import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useContext } from "react";
 import Stripe from "stripe";
+import { CartContext } from "../../contexts/CartContext";
 import { stripe } from "../../lib/stripe";
 import { ImageContainer, ProductContainer, ProductDetails } from "../../styles/pages/product";
 
+interface Product {
+  id: string;
+  name: string;
+  imageUrl: string;
+  price: string;
+  numberPrice: number;
+  description: string;
+  defaultPrice: string;
+}
+
 interface ProductProps {
-  product: {
-    id: number;
-    name: string;
-    imageUrl: string;
-    price: string;
-    description: string;
-    defaultPriceId: string;
-  }
+  product: Product;
 }
 
 export default function Product({ product }: ProductProps) {
-  const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false);
+  const { isFallback } = useRouter();
 
-  async function handleBuyProduct() {
-    try {
-      setIsCreatingCheckoutSession(true);
+  const { addingProductToCart, checkIfProductAlreadyExistsInTheCart } = useContext(CartContext);
 
-      const response = await axios.post('/api/checkout', {
-        priceId: product.defaultPriceId, //enviando o id do preço do produto 
-      });
+  const itemAlreadyAddedToTheCart = checkIfProductAlreadyExistsInTheCart(product.id);
 
-      const { checkoutUrl } = response.data; //capturando o link de redirecionamento de compra
-
-      window.location.href = checkoutUrl;
-    } catch {
-      // conectar com uma ferramenta de observabilidades (Datadog / Sentry)
-
-      setIsCreatingCheckoutSession(false);
-
-      alert('Falha ao redirecionar ao checkout!');
-    }
+  if (isFallback) {
+    return <p>Loading...</p>
   }
 
   return (  
@@ -59,7 +51,9 @@ export default function Product({ product }: ProductProps) {
 
           <p>{product.description}</p>
         
-          <button disabled={isCreatingCheckoutSession} onClick={handleBuyProduct}>Comprar Agora</button>
+          <button disabled={itemAlreadyAddedToTheCart} onClick={() => addingProductToCart(product)}>
+            {itemAlreadyAddedToTheCart ? "Produto já está no carrinho" : "Colocar na sacola"}
+          </button>
         </ProductDetails>
       </ProductContainer>
     </>
@@ -94,6 +88,7 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({ para
           style: 'currency', 
           currency: 'BRL',
         }).format(Number(price.unit_amount) / 100),
+        numberPrice: price.unit_amount / 100,
         description: product.description,
         defaultPriceId: price.id,
       }

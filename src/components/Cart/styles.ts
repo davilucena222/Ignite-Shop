@@ -13,12 +13,22 @@ export const CartContent = styled(Dialog.Content, {
   boxShadow: -"4px 0px 30px rgba(0, 0, 0, 0.8)",
   display: "flex",
   flexDirection: "column",
+  
+  overflowY: "scroll",
 
   h2: {
     fontWeight: 700,
     fontSize: "$lg",
     color: "$gray100",
     marginBottom: "2rem",
+  },
+
+  "> section": {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1.5rem",
+    minHeight: "20rem",
+    overflowY: "auto",
   }
 });
 
@@ -110,8 +120,9 @@ export const FinalizationDetails = styled("section", {
   display: "flex",
   flexDirection: "column",
   gap: 8,
+  marginTop: "auto",
   marginBottom: 55,
-
+  
   div: {
     display: "flex",
     justifyContent: "space-between",
