@@ -3,9 +3,6 @@ import Link from "next/link";
 import Head from "next/head";
 import { HomeContainer, Product } from "../styles/pages/home";
 
-import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
-
 import { GetStaticProps } from "next";
 
 import { stripe } from "../lib/stripe";
@@ -21,13 +18,6 @@ interface HomeProps {
 }
 
 export default function Home({ products }: HomeProps) {
-  const [sliderRef] = useKeenSlider({
-    slides: {
-      perView: 3,
-      spacing: 48,
-    }
-  });
-
   return (
     <>
       <Head>
