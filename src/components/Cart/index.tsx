@@ -6,21 +6,8 @@ import { useContext, useState } from "react";
 import { CartContext } from "../../contexts/CartContext";
 import CartButton from "../CartButton";
 import { CartClose, CartContent, CartProduct, ProductImage, CartFinalization, CartProductDetails, FinalizationDetails } from "./styles";
-interface Product {
-  id: string;
-  name: string;
-  imageUrl: string;
-  price: string;
-  numberPrice: number;
-  description: string;
-  defaultPriceId: string;
-}
 
-interface CartProps {
-  product: Product;
-}
-
-export default function Cart({ product }: CartProps) {
+export default function Cart() {
   const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false);
 
   const { cartItems, removeProductFromCart, totalPrice } = useContext(CartContext);
@@ -54,7 +41,11 @@ export default function Cart({ product }: CartProps) {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <CartButton />
+        {cartItemsLength > 0 ? (
+          <CartButton color="white" value="true" />
+        ) : (
+          <CartButton />
+        )}
       </Dialog.Trigger>
 
       <Dialog.Portal>

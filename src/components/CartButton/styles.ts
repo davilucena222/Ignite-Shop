@@ -27,6 +27,10 @@ export const CartButtonContainer = styled("button", {
           backgroundColor: "$green300",
         },
       },
+      white: {
+        color: "$gray300",
+        background: "$gray800",
+      },
     },
     size: {
       medium: {
@@ -52,4 +56,19 @@ export const CartButtonContainer = styled("button", {
     color: "gray",
     size: "medium",
   }
+});
+
+export const CircleCount = styled("span", {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  position: "absolute",
+  width: "1.5rem",
+  height: "1.5rem",
+  borderRadius: 1000,
+  background: "$green500",
+  color: "$white",
+
+  right: "-0.438rem",
+  top: "-0.438rem",
 });

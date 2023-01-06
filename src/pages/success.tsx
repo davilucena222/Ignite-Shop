@@ -16,7 +16,6 @@ export default function Success({ customerName, productImages }: SuccessProps) {
     <>
       <Head>
         <title>Compra efetuada | Ignite Shop</title>
-
         <meta name="robots" content="noindex" />
       </Head>
 
@@ -32,7 +31,7 @@ export default function Success({ customerName, productImages }: SuccessProps) {
         <h1>Compra efetuada!</h1>
 
         <p>
-          Uhuul <strong>{customerName}</strong>, sua compra de {productImages.length} camisetas já está a caminho da sua casa. 
+          Uhuul <strong>{customerName}</strong>, sua compra de {productImages.length} camiseta(s) já está a caminho da sua casa. 
         </p>
 
         <Link href="/">
@@ -65,8 +64,6 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     const product = item.price.product as Stripe.Product;
     return product.images[0];
   });
-
-  console.log(productImages)
 
   return {
     props: {
