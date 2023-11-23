@@ -1,4 +1,4 @@
-# 🔖 Ignite Shop
+# 🔖 igshop
 
 ![image](https://user-images.githubusercontent.com/56702492/211023542-644beb80-8e36-4fd8-8aa9-305092a2dc4f.png)
 
@@ -21,7 +21,7 @@
 
 # 💡 About the project
 <p>
-The Ignite Shop is an e-commerce platform where you can choose the model of shirt that best suits you at a fair and adequate price, with payment via credit card.
+The igshop is an e-commerce platform where you can choose the model of shirt that best suits you at a fair and adequate price, with payment via credit card.
  
 In this application, the Next.js framework was used to build the front-end of the application and make calls to the Stripe API (a payment API) on the side of the SSR (Server Side Rendering) and also implemented the saving of page information via cache with updates managed via SSG (Static Site Generation) where the page can be accessed even with JavaScript disabled and having cached information that further anticipates the super fast loading of the page.
 
